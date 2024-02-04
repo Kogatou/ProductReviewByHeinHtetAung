@@ -9,14 +9,6 @@
 
   <ItemGroup>
     <Content Remove="Pages\FetchData.razor" />
-    <Content Remove="Pages\Reviewer\CreateReviewers.razor" />
-    <Content Remove="Pages\Reviewer\EditReviewers.razor" />
-    <Content Remove="Pages\Reviewer\Reviewers.razor" />
-    <Content Remove="Pages\Reviewer\ViewReviewer.razor" />
-    <Content Remove="Pages\Review\CreateReview.razor" />
-    <Content Remove="Pages\Review\EditReview.razor" />
-    <Content Remove="Pages\Review\Review.razor" />
-    <Content Remove="Pages\Review\ViewReview.razor" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,11 +25,6 @@
 
   <ItemGroup>
     <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Pages\Reviewer\" />
-    <Folder Include="Pages\Review\" />
   </ItemGroup>
 
 </Project>

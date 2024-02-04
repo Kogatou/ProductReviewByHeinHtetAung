@@ -26,16 +26,11 @@
         </div>
     </div>
 
-    @* <h1> @CategoryId </h1> *@
-
     <div class="form-group">
         <label>Category: </label>
         <div>
             <InputSelect @bind-Value="categoryPcPart.CategoryId" class="form-control">
                 <option value="-1">-- Select Make --</option>
-               @*  <option value="1">-- One --</option>
-                <option value="2">-- Two --</option>
-                <option value="3">--Three --</option> *@
                 @if (categories != null)
                 {
                     @foreach (var category in categories)
@@ -46,14 +41,6 @@
             </InputSelect>
         </div>
     </div>
-
-  @*   @if (categories != null)
-    {
-        @foreach (var category in categories)
-        {
-            <buttton class="btn btn-primary"> @category.CategoryName</buttton>
-        }
-    } *@
 
     <button type="submit" class="btn btn-success mt-3" @onclick="()=>Save()">
         Addd Category PcPart
@@ -66,8 +53,6 @@
     public int id { get; set; }
 
     private Model.CategoryPcPart categoryPcPart = new Model.CategoryPcPart();
-
-    // private int CategoryId = 0;
 
     private Model.PcPart pcpartModel = new Model.PcPart();
     private List<Model.Category> categories = new List<Model.Category>();

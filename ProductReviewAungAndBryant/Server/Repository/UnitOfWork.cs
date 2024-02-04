@@ -18,8 +18,6 @@ namespace ProductReviewAungAndBryant.Server.Repository
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
-        //private IGenericRepository<Reviewer> _Reviewers;
-        //private IGenericRepository<Review> _Reviews;
         private IGenericRepository<PcPart> _PcParts;
         private IGenericRepository<Category> _Categories;
         private IGenericRepository<Shared.Domain.CategoryPcPart> _CategoryPcParts;
@@ -33,10 +31,6 @@ namespace ProductReviewAungAndBryant.Server.Repository
             _userManager = userManager;
         }
 
-        //public IGenericRepository<Reviewer> Reviewers
-        //    => _Reviewers ??= new GenericRepository<Reviewer>(_context);
-        //public IGenericRepository<Review> Reviews
-        //    => _Reviews ??= new GenericRepository<Review>(_context);
         public IGenericRepository<PcPart> PcParts
             => _PcParts ??= new GenericRepository<PcPart>(_context);
         public IGenericRepository<Category> Categories

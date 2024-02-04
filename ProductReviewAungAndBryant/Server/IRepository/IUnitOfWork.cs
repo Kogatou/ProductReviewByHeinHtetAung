@@ -11,8 +11,6 @@ namespace ProductReviewAungAndBryant.Server.IRepository
     public interface IUnitOfWork : IDisposable
     {
         Task Save(HttpContext httpContext);
-        //IGenericRepository<Reviewer> Reviewers { get; }
-        //IGenericRepository<Review> Reviews { get; }
         IGenericRepository<PcPart> PcParts { get; }
         IGenericRepository<Category> Categories { get; }
         IGenericRepository<CategoryPcPart> CategoryPcParts { get; }

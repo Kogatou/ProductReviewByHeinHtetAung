@@ -52,9 +52,5 @@ namespace ProductReviewAungAndBryant.Client.Services
         }
 
         public void DisposeEvent() => interceptor.AfterSend -= InterceptResponse;
-
-
-
     }
-
-        }
+}

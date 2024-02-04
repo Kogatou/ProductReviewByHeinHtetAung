@@ -14,14 +14,10 @@ namespace ProductReviewAungAndBryant.Server.Data
             DbContextOptions options,
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
-        }
-
-        //public DbSet<Review> Reviews { get; set; } 
+        }        
 
         public DbSet<PcPart> PcParts { get; set; }
-
-        //public DbSet<Reviewer> Reviewers {  get; set; }
-
+      
         public DbSet<Category> Categories { get; set; }
 
         public DbSet<CategoryPcPart> CategoryPcParts { get; set; }
@@ -30,9 +26,7 @@ namespace ProductReviewAungAndBryant.Server.Data
         {
             base.OnModelCreating(builder);
 
-            // builder.ApplyConfiguration(new ReviewerSeedConfiguration());
             builder.ApplyConfiguration(new PcPartSeedConfiguration());
-            // builder.ApplyConfiguration(new ReviewSeedConfiguration());
             builder.ApplyConfiguration(new CategorySeedConfiguration());
         }
     }

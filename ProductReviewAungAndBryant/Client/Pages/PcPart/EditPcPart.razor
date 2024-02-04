@@ -62,8 +62,7 @@
     }
 
     async Task Edit()
-    {
-        //pcpartModel.CreatedBy = "11";
+    {      
         pcpartModel.UpdatedBy = "Admin";
         await _client.PutAsJsonAsync($"{Endpoints.PcPartsEndpoint}/PutPcPart/{id}", pcpartModel);
         _navManager.NavigateTo("/pcparts/");
