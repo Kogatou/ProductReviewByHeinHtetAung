@@ -1,0 +1,33 @@
+﻿@page "/Test500"
+
+@using ProductReviewAungAndBryant.Client.Static
+
+@inject HttpClient _client
+@inject HttpInterceptorService _interceptor
+@implements IDisposable
+
+<h3>Test500</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _interceptor.MonitorEvent();
+            var result = await _client.GetAsync($"{Endpoints.GlobalErrorHandleEndPoint}/Get500");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+        catch
+        {
+
+        }
+    }
+
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+    }
+}

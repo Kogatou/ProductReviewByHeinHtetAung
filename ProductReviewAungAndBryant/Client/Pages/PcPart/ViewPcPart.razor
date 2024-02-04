@@ -1,0 +1,112 @@
+﻿@page "/pcparts/view/{id:int}"
+
+@using Model = ProductReviewAungAndBryant.Shared.Domain
+@using ProductReviewAungAndBryant.Client.Static
+
+@inject NavigationManager _navManager
+@inject HttpClient _client
+@inject HttpInterceptorService _interceptor
+@implements IDisposable
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+
+<h3>View PcPart </h3>
+<div class="form-group">
+    <label>PcPart Name: </label>
+    <div>
+        <InputText @bind-Value="pcpartModel.PcPartName" class="form-control" />
+    </div>
+</div>
+<div class="form-group mt-3">
+    <label>PcPart Price: </label>
+    <div>
+        <InputNumber @bind-Value="pcpartModel.PcPartPrice" class="form-control" />
+    </div>
+</div>
+
+@* <div class="form-group mt-3">
+    <label>Category Name: </label>
+    <div>
+        @if (categoryPcParts != null)
+        {
+            <ul>
+                @foreach (var item in categoryPcParts)
+                {
+                    <li>@item.CategoryId</li>
+                }
+            </ul>
+        }
+    </div>
+</div> *@
+
+<div class="form-group mt-3">
+    <label>Category Name: </label>
+    <div>
+        @if (categories != null)
+        {
+            <ul>
+                @foreach (var item in categories)
+                {
+                    <li>@item.CategoryName</li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+
+<button type="button" class="btn btn-success mt-3" @onclick="()=>Back()">
+    @ButtonText
+</button>
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+    public string ButtonText { get; set; } = "Back";
+
+    private Model.PcPart pcpartModel = new Model.PcPart();
+    private List<Model.CategoryPcPart> categoryPcParts = new List<Model.CategoryPcPart>();
+    private List<Model.Category> categories = new List<Model.Category>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _interceptor.MonitorEvent();
+            pcpartModel = await _client.GetFromJsonAsync<Model.PcPart>($"{Endpoints.PcPartsEndpoint}/GetPcPart/{id}");
+
+            //categoryPcParts = await _client.GetFromJsonAsync<List<Model.CategoryPcPart>>($"{Endpoints.PcPartsEndpoint}/GetCategoryByPcPartId/{id}");
+
+            //foreach (var item in categoryPcParts)
+            foreach (var item in pcpartModel.CategoryPcParts)
+            {
+                // Model.Category categoryModel = new Model.Category();
+                // categoryModel = await _client.GetFromJsonAsync<Model.Category>($"{Endpoints.CategoriesEndpoint}/GetCategory/{item.CategoryId}");
+                
+                // // to add list 
+                // categories.Add(categoryModel);
+
+                    categories.Add(item.Category);
+            }
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+        catch
+        {
+
+        }
+    }
+
+    async Task Back()
+    {
+        _navManager.NavigateTo("/pcparts/");
+    }
+
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+    }
+}
+

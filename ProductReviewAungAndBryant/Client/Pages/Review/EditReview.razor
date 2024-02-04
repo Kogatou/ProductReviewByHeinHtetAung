@@ -1,0 +1,60 @@
+﻿@page "/reviews/edit/{id:int}"
+
+@using ReviewModel = ProductReviewAungAndBryant.Shared.Domain
+@using ProductReviewAungAndBryant.Client.Static
+@inject NavigationManager _navManager
+@inject HttpClient _client
+
+<h3>Edit Review</h3>
+
+<EditForm Model="reviewModel">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label>Review Name: </label>
+        <div>
+            <InputText @bind-Value="reviewModel.Name" class="form-control" />
+            <ValidationMessage For="@(() => reviewModel.Name)" />
+        </div>
+    </div>
+    <div class="form-group mt-3">
+        <label>Category Brand Name: </label>
+        <div>
+            <InputText @bind-Value="reviewModel.ReviewText" class="form-control" />
+            <ValidationMessage For="@(() => reviewModel.ReviewText)" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3" @onclick="()=>Edit()">
+        @ButtonText
+    </button>
+</EditForm>
+
+@code {
+
+    [Parameter]
+    public int id { get; set; }
+
+    private ReviewModel.Review reviewModel = new ReviewModel.Review();
+    public string ButtonText { get; set; } = "Update Category";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            reviewModel = await _client.GetFromJsonAsync<ReviewModel.Review>($"{Endpoints.CategoriesEndpoint}/GetCategory/{id}");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    async Task Edit()
+    {
+        categoryModel.CreatedBy = "11";
+        categoryModel.UpdatedBy = "11";
+        await _client.PutAsJsonAsync($"{Endpoints.CategoriesEndpoint}/PutCategory/{id}", categoryModel);
+        _navManager.NavigateTo("/Categories/");
+    }
+}

@@ -1,0 +1,51 @@
+﻿@page "/categories/view/{id:int}"
+
+@using CategoryModel = ProductReviewAungAndBryant.Shared.Domain
+@using ProductReviewAungAndBryant.Client.Static
+
+@inject NavigationManager _navManager
+@inject HttpClient _client
+
+<h3>View Category </h3>
+<div class="form-group">
+    <label>Category Name: </label>
+    <div>
+        <InputText @bind-Value="categoryModel.CategoryName" class="form-control" />
+    </div>
+</div>
+<div class="form-group mt-3">
+    <label>Category Brand Name: </label>
+    <div>
+        <InputText @bind-Value="categoryModel.CategoryBrandName" class="form-control" />
+    </div>
+</div>
+
+<button type="button" class="btn btn-success mt-3" @onclick="()=>Back()">
+    @ButtonText
+</button>
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+    public string ButtonText { get; set; } = "Back";
+
+    private CategoryModel.Category categoryModel = new CategoryModel.Category();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            categoryModel = await _client.GetFromJsonAsync<CategoryModel.Category>($"{Endpoints.CategoriesEndpoint}/GetCategory/{id}");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    async Task Back()
+    {
+        _navManager.NavigateTo("/categories/");
+    }
+}
+

@@ -1,0 +1,106 @@
+﻿@page "/pcparts/add-category/{id:int}"
+
+@inject NavigationManager _navManager
+@inject HttpClient _client
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+
+@using Model = ProductReviewAungAndBryant.Shared.Domain
+@using ProductReviewAungAndBryant.Client.Static
+
+<h3>Category PcPart</h3>
+<EditForm Model="categoryPcPart">
+
+    <div class="form-group">
+        <label>PcPart Name: </label>
+        <div>
+            <InputText @bind-Value="pcpartModel.PcPartName" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group mt-3 mb-3">
+        <label>Category Brand Name: </label>
+        <div>
+            <InputNumber @bind-Value="pcpartModel.PcPartPrice" class="form-control" />
+        </div>
+    </div>
+
+    @* <h1> @CategoryId </h1> *@
+
+    <div class="form-group">
+        <label>Category: </label>
+        <div>
+            <InputSelect @bind-Value="categoryPcPart.CategoryId" class="form-control">
+                <option value="-1">-- Select Make --</option>
+               @*  <option value="1">-- One --</option>
+                <option value="2">-- Two --</option>
+                <option value="3">--Three --</option> *@
+                @if (categories != null)
+                {
+                    @foreach (var category in categories)
+                    {
+                        <option value="@category.Id"> @category.CategoryName</option>
+                    }
+                }
+            </InputSelect>
+        </div>
+    </div>
+
+  @*   @if (categories != null)
+    {
+        @foreach (var category in categories)
+        {
+            <buttton class="btn btn-primary"> @category.CategoryName</buttton>
+        }
+    } *@
+
+    <button type="submit" class="btn btn-success mt-3" @onclick="()=>Save()">
+        Addd Category PcPart
+    </button>
+
+</EditForm>
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    private Model.CategoryPcPart categoryPcPart = new Model.CategoryPcPart();
+
+    // private int CategoryId = 0;
+
+    private Model.PcPart pcpartModel = new Model.PcPart();
+    private List<Model.Category> categories = new List<Model.Category>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            pcpartModel = await _client.GetFromJsonAsync<Model.PcPart>($"{Endpoints.PcPartsEndpoint}/GetPcPart/{id}");
+            categories = await _client.GetFromJsonAsync<List<Model.Category>>($"{Endpoints.CategoriesEndpoint}/GetCategories");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+        catch
+        {
+
+        }
+    }
+
+    async Task Save()
+    {
+        try
+        {
+            categoryPcPart.PcPartId = id;
+            categoryPcPart.CreatedBy = "System";
+            await _client.PostAsJsonAsync($"{Endpoints.PcPartsEndpoint}/AddCategoryPcPart", categoryPcPart);
+            _navManager.NavigateTo("/pcparts/");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+}

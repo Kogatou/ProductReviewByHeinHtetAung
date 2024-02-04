@@ -1,0 +1,43 @@
+﻿@page "/categories/create"
+
+@using CategoryModel = ProductReviewAungAndBryant.Shared.Domain
+@using ProductReviewAungAndBryant.Client.Static
+@inject NavigationManager _navManager
+@inject HttpClient _client
+
+<h3>Add Category</h3>
+
+<EditForm Model="categoryModel">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label>Category Name: </label>
+        <div>
+            <InputText @bind-Value="categoryModel.CategoryName" class="form-control" />
+            <ValidationMessage For="@(() => categoryModel.CategoryName)" />
+        </div>
+    </div>
+    <div class="form-group mt-3">
+        <label>Category Brand Name: </label>
+        <div>
+            <InputText @bind-Value="categoryModel.CategoryBrandName" class="form-control" />
+            <ValidationMessage For="@(() => categoryModel.CategoryBrandName)" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3" @onclick="()=>Save()">
+        @ButtonText
+    </button>
+</EditForm>
+
+@code {
+    private CategoryModel.Category categoryModel = new CategoryModel.Category();
+    public string ButtonText { get; set; } = "Save Category";
+
+    async Task Save()
+    {
+        categoryModel.CreatedBy = "Admin";
+        await _client.PostAsJsonAsync($"{Endpoints.CategoriesEndpoint}/PostCategory", categoryModel);
+        _navManager.NavigateTo("/Categories/");
+    }
+}

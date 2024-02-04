@@ -1,0 +1,9 @@
+﻿@page "/dashboard/{message?}"
+@page "/dash"
+
+<h3>Dashboard @Message</h3>
+
+@code {
+    [Parameter] 
+    public string? Message { get; set; }
+}

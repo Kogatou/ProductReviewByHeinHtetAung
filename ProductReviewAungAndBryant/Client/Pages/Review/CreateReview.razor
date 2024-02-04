@@ -1,0 +1,43 @@
+﻿@page "/reviews/create"
+
+@using ReviewModel = ProductReviewAungAndBryant.Shared.Domain
+@using ProductReviewAungAndBryant.Client.Static
+@inject NavigationManager _navManager
+@inject HttpClient _client
+
+<h3>Add Category</h3>
+
+<EditForm Model="reviewModel">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label>Name: </label>
+        <div>
+            <InputText @bind-Value="reviewModel.Name" class="form-control" />
+            <ValidationMessage For="@(() => reviewModel.Name)" />
+        </div>
+    </div>
+    <div class="form-group mt-3">
+        <label>Review Text: </label>
+        <div>
+            <InputText @bind-Value="reviewModel.ReviewText" class="form-control" />
+            <ValidationMessage For="@(() => reviewModel.ReviewText)" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3" @onclick="()=>Save()">
+        @ButtonText
+    </button>
+</EditForm>
+
+@code {
+    private ReviewModel.Review reviewModel = new ReviewModel.Review();
+    public string ButtonText { get; set; } = "Save Review";
+
+    async Task Save()
+    {
+        reviewModel.CreatedBy = "Admin";
+        await _client.PostAsJsonAsync($"{Endpoints.CategoriesEndpoint}/ PostReview", reviewModel);
+        _navManager.NavigateTo("/Reviews/");
+    }
+}

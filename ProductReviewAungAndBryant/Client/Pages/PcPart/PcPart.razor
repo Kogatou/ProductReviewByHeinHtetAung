@@ -1,0 +1,129 @@
+﻿@page "/pcparts"
+@inject NavigationManager _navManager
+@inject HttpClient _client
+@inject IJSRuntime js
+@inject HttpInterceptorService _interceptor
+@implements IDisposable
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+
+@using PcPartModel = ProductReviewAungAndBryant.Shared.Domain
+@using ProductReviewAungAndBryant.Client.Static
+<h3>PcPart</h3>
+
+<a href="/pcparts/create" class="btn btn-secondary mb-3">
+    <span class="oi oi-plus"></span>
+    New PcPart
+</a>
+<br />
+
+@if (pcparts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-responsive" id="pcpartsTable">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>PcPartName</th>
+                <th>PcPartPrice</th>
+                <th>CreatedBy</th>
+                <th>UpdatedBy</th>
+                <th>Add Category</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pcpart in pcparts)
+            {
+                <tr>
+                    <td>
+                        @if (pcpart.PcPartImages != null &&
+                       pcpart.PcPartImages.Count > 0)
+                        {
+                            <img src="data:image/png;base64,@pcpart.PcPartImages[0].base64data" alt="Photo"  width="100" height="100"/>
+                        }
+                        else
+                        {
+                            <p>No photo available.</p>
+                        }
+
+                    </td>
+                    <td>@pcpart.PcPartName</td>
+                    <td>@pcpart.PcPartPrice</td>
+                    <td>@pcpart.CreatedBy</td>
+                    <td>@pcpart.UpdatedBy</td>
+                    <td>
+                        <a href="/pcparts/add-category/@pcpart.Id" class="btn btn-primary">
+                            <span>Add Category</span>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="pcparts/view/@pcpart.Id" class="btn btn-primary">
+                            <span class="oi oi-book"></span>
+                        </a>
+                        <a href="pcparts/edit/@pcpart.Id" class="btn btn-primary">
+                            <span class="oi oi-pencil"></span>
+                        </a>
+                        <button class="btn btn-danger" @onclick="@(()=> Delete(pcpart.Id))">
+                            <span class="oi oi-delete"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+
+@code {
+    private List<PcPartModel.PcPart> pcparts = new List<PcPartModel.PcPart>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _interceptor.MonitorEvent();
+            pcparts = await _client.GetFromJsonAsync<List<PcPartModel.PcPart>>($"{Endpoints.PcPartsEndpoint}/GetPcParts");
+            await js.InvokeVoidAsync("AddDataTable", "#pcpartsTable");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+        catch (Exception e)
+        {
+        }
+    }
+
+    async Task Delete(int id)
+    {
+        try
+        {
+            if (pcparts != null)
+            {
+                PcPartModel.PcPart pcpart = pcparts.Where(w => w.Id == id).First();
+
+                var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete pcpart - {pcpart.PcPartName}?");
+                if (confirm)
+                {
+                    await _client.DeleteAsync($"{Endpoints.PcPartsEndpoint}/DeletePcPart/{id}");
+                    await OnInitializedAsync();
+                }
+            }
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    public void Dispose()
+    {          
+        _interceptor.DisposeEvent();
+        js.InvokeVoidAsync("DataTablesDispose", "#pcpartsTable");
+    }
+}
